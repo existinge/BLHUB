@@ -30,7 +30,7 @@ This local server uses Google OAuth, so you sign in once and no Google secret is
 
    `http://127.0.0.1:4173/api/google/auth/callback`
 
-4. Add the client ID and client secret to `.env.local` using `.env.example` as the template, then restart `node server.mjs`.
+4. Add the client ID and client secret to `.env.local` using `.env.example` as the template, or add `GOOGLE_OAUTH_CLIENT_FILE` pointing to the downloaded OAuth JSON file. Then restart `node server.mjs`.
 5. In the app, open **Details** in the sync card and choose **Connect Google Sheet**. Approve access with the Google account that owns the Sheet.
 
 The local server keeps the OAuth token in `.google-oauth.json`, which is ignored by Git. The first synced change adds extra metadata headers to the right of the existing WATCH columns; it preserves the original fields and Softr Record ID. Discovery-inbox and task-tab sync can be added next after you decide their tab names and fields.

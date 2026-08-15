@@ -7,8 +7,10 @@ const root = new URL(".", import.meta.url).pathname;
 const mime = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json; charset=utf-8", ".svg": "image/svg+xml" };
 const localEnv = readLocalEnv(join(root, ".env.local"));
 const tmdbReadToken = localEnv.TMDB_READ_ACCESS_TOKEN || process.env.TMDB_READ_ACCESS_TOKEN || "";
-const googleClientId = localEnv.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID || "";
-const googleClientSecret = localEnv.GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET || "";
+const oauthClientFile = localEnv.GOOGLE_OAUTH_CLIENT_FILE || process.env.GOOGLE_OAUTH_CLIENT_FILE || "";
+const oauthClient = readOAuthClient(oauthClientFile);
+const googleClientId = localEnv.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID || oauthClient.client_id || "";
+const googleClientSecret = localEnv.GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET || oauthClient.client_secret || "";
 const googleSheetId = localEnv.GOOGLE_SHEET_ID || process.env.GOOGLE_SHEET_ID || "1sO80QOaJX2E8SZM6gHec7lVtXRNqWtL1";
 const googleRedirectUri = localEnv.GOOGLE_REDIRECT_URI || process.env.GOOGLE_REDIRECT_URI || "http://127.0.0.1:4173/api/google/auth/callback";
 const googleTokenPath = join(root, ".google-oauth.json");
@@ -27,6 +29,11 @@ function readLocalEnv(filePath) {
         return [line.slice(0, separator), line.slice(separator + 1)];
       }),
   );
+}
+
+function readOAuthClient(filePath) {
+  if (!filePath || !existsSync(filePath)) return {};
+  try { const parsed = JSON.parse(readFileSync(filePath, "utf8")); return parsed.web || parsed.installed || {}; } catch { return {}; }
 }
 
 const countryCodes = { China: "CN", Japan: "JP", Philippines: "PH", "South Korea": "KR", Taiwan: "TW", Thailand: "TH" };
