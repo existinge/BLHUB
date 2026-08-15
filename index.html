@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f5f2" />
+    <title>BL Shelf</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#home" aria-label="BL Shelf home">
+          <span class="brand-mark">B</span>
+          <span>BL Shelf</span>
+        </a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a class="nav-link is-active" href="#home">Home</a>
+          <a class="nav-link" href="#library">Library</a>
+          <a class="nav-link" href="#inbox">Inbox <span id="inboxCount" class="nav-count"></span></a>
+          <a class="nav-link" href="#tasks">Tasks</a>
+        </nav>
+        <div class="topbar-actions">
+          <button id="themeToggle" class="icon-button" type="button" aria-label="Switch color mode" title="Switch color mode">◐</button>
+          <button id="batchEnrichButton" class="button button-secondary" type="button">Enrich active</button>
+          <button id="addTitleButton" class="button button-secondary" type="button">Add title</button>
+          <button id="newTaskButton" class="button button-primary" type="button">Research task</button>
+        </div>
+      </header>
+
+      <main id="appMain">
+        <section id="home" class="page-section hero-section">
+          <div>
+            <p class="eyebrow">Your private watch space</p>
+            <h1>Pick something that fits <em>right now.</em></h1>
+            <p class="hero-copy">A quiet home for your watch history, current mood, and discoveries worth reviewing—not another endless recommendation feed.</p>
+            <div class="hero-actions">
+              <button class="button button-primary" data-scroll-target="watching">Continue watching</button>
+              <button class="button button-ghost" data-scroll-target="inbox">Review discoveries</button>
+            </div>
+            <p id="batchStatus" class="batch-status" aria-live="polite"></p>
+          </div>
+          <aside class="sync-card" aria-label="Data sync status">
+            <span class="status-dot"></span>
+            <div>
+              <p id="syncTitle" class="sync-title">Checking sync…</p>
+              <p id="syncDetail" class="sync-detail">Your changes are saved in this browser while the connection is checked.</p>
+            </div>
+            <button id="openSyncButton" class="text-button" type="button">Details</button>
+          </aside>
+        </section>
+
+        <section class="metrics" aria-label="Watchlist summary">
+          <article class="metric-card"><span>Completed</span><strong id="completedMetric">—</strong></article>
+          <article class="metric-card"><span>Watching</span><strong id="watchingMetric">—</strong></article>
+          <article class="metric-card"><span>For later</span><strong id="laterMetric">—</strong></article>
+          <article class="metric-card"><span>To review</span><strong id="reviewMetric">—</strong></article>
+        </section>
+
+        <section id="watching" class="gallery-section">
+          <div class="section-heading">
+            <div><p class="eyebrow">In progress</p><h2>Continue watching</h2></div>
+            <div class="carousel-controls">
+              <button class="carousel-control" data-carousel="watching" data-direction="-1" type="button" aria-label="Previous titles">←</button>
+              <button class="carousel-control" data-carousel="watching" data-direction="1" type="button" aria-label="Next titles">→</button>
+            </div>
+          </div>
+          <div id="watchingCarousel" class="carousel" aria-label="Titles currently watching"></div>
+        </section>
+
+        <section id="library" class="gallery-section soft-section">
+          <div class="section-heading">
+            <div><p class="eyebrow">A good next choice</p><h2>Ready when you are</h2></div>
+            <div class="carousel-controls">
+              <button class="carousel-control" data-carousel="ready" data-direction="-1" type="button" aria-label="Previous titles">←</button>
+              <button class="carousel-control" data-carousel="ready" data-direction="1" type="button" aria-label="Next titles">→</button>
+            </div>
+          </div>
+          <div id="readyCarousel" class="carousel" aria-label="Titles ready to watch"></div>
+        </section>
+
+        <section id="inbox" class="gallery-section">
+          <div class="section-heading">
+            <div><p class="eyebrow">Nothing auto-added</p><h2>Discovery inbox</h2></div>
+            <button id="viewAllInbox" class="text-button" type="button">See all</button>
+          </div>
+          <div id="inboxGrid" class="inbox-grid" aria-live="polite"></div>
+        </section>
+
+        <section id="tasks" class="task-section">
+          <div>
+            <p class="eyebrow">Research, with brakes</p>
+            <h2>Ask the app to look.</h2>
+            <p>Every task starts with your rules: aliases first, watch history next, sources after. It returns candidates to the inbox—it never changes your permanent list by itself.</p>
+          </div>
+          <div class="task-panel">
+            <div id="taskList" class="task-list"></div>
+            <button id="createTaskInline" class="button button-secondary" type="button">Create a research task</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="detailDialog" class="dialog detail-dialog">
+      <button class="dialog-close" data-close-dialog="detailDialog" type="button" aria-label="Close">×</button>
+      <div id="detailContent"></div>
+    </dialog>
+
+    <dialog id="titleDialog" class="dialog form-dialog">
+      <button class="dialog-close" data-close-dialog="titleDialog" type="button" aria-label="Close">×</button>
+      <form id="titleForm" method="dialog">
+        <p class="eyebrow">Manual update</p><h2>Add a title</h2>
+        <label>Title<input name="title" required placeholder="Title" /></label>
+        <div class="form-row">
+          <label>Status<select name="status"><option>Plan to Watch</option><option>Watching / Caught Up</option><option>Maybe</option><option>Completed</option><option>Dropped</option></select></label>
+          <label>Country<input name="country" placeholder="Japan" /></label>
+        </div>
+        <div class="form-row">
+          <label>Year<input name="year" type="number" min="1900" max="2100" placeholder="2026" /></label>
+          <label>Type<select name="type"><option>Drama</option><option>Movie</option><option>Short Film</option><option>Web Series</option></select></label>
+        </div>
+        <label>Notes<textarea name="notes" rows="3" placeholder="Why you added it, or what you thought…"></textarea></label>
+        <menu><button class="button button-ghost" data-close-dialog="titleDialog" type="button">Cancel</button><button class="button button-primary" value="default">Save title</button></menu>
+      </form>
+    </dialog>
+
+    <dialog id="taskDialog" class="dialog form-dialog">
+      <button class="dialog-close" data-close-dialog="taskDialog" type="button" aria-label="Close">×</button>
+      <form id="taskForm" method="dialog">
+        <p class="eyebrow">Discovery task</p><h2>What should it look for?</h2>
+        <label>Request<textarea name="query" rows="3" required placeholder="Find newly announced Japanese or Taiwanese BLs with a clear payoff."></textarea></label>
+        <fieldset><legend>Sources for this task</legend><label class="check-label"><input type="checkbox" name="source" value="TMDB" checked /> TMDB metadata</label><label class="check-label"><input type="checkbox" name="source" value="MDL" checked /> MyDramaList discovery</label><label class="check-label"><input type="checkbox" name="source" value="Approved web sources" checked /> Approved platform and web sources</label></fieldset>
+        <p class="form-note">In the local MVP, tasks are queued and auditable. Live fetching activates after source credentials are connected.</p>
+        <menu><button class="button button-ghost" data-close-dialog="taskDialog" type="button">Cancel</button><button class="button button-primary" value="default">Create review task</button></menu>
+      </form>
+    </dialog>
+
+    <dialog id="syncDialog" class="dialog form-dialog sync-dialog">
+      <button class="dialog-close" data-close-dialog="syncDialog" type="button" aria-label="Close">×</button>
+      <p class="eyebrow">Connection boundary</p><h2>Google Sheet sync</h2>
+      <p>This app writes only after you authorize it with your Google account. Status, progress, title facts, and structured metadata then sync back to your personal Sheet.</p>
+      <div class="code-block">Sheet ID: <code>1sO80QOaJX2E8SZM6gHec7lVtXRNqWtL1</code></div>
+      <p id="syncDialogStatus" class="form-note">Checking Google connection…</p>
+      <menu><button id="syncPendingButton" class="button button-secondary" type="button">Sync pending changes</button><button id="connectGoogleButton" class="button button-primary" type="button">Connect Google Sheet</button><button class="button button-ghost" data-close-dialog="syncDialog" type="button">Close</button></menu>
+    </dialog>
+
+    <dialog id="metadataDialog" class="dialog form-dialog metadata-dialog">
+      <button class="dialog-close" data-close-dialog="metadataDialog" type="button" aria-label="Close">×</button>
+      <form id="metadataForm" method="dialog">
+        <p class="eyebrow">Structured metadata</p><h2>Edit title facts</h2>
+        <div class="form-row"><label>Country<input name="country" /></label><label>Region group<input name="regionGroup" placeholder="East Asia" /></label></div>
+        <div class="form-row"><label>Year<input name="year" type="number" min="1900" max="2100" /></label><label>Format<input name="type" placeholder="Drama" /></label></div>
+        <label>Aliases<input name="aliases" placeholder="Alt title; romanization; translated title" /></label>
+        <div class="form-row"><label>Genres / tags<input name="genres" placeholder="Romance, school, coming of age" /></label><label>Platforms<input name="platforms" placeholder="GagaOOLala, Viki…" /></label></div>
+        <div class="form-row"><label>Release state<input name="releaseState" placeholder="Released / airing / announced" /></label><label>Actual BL<input name="actualBL" placeholder="Yes / No / needs verification" /></label></div>
+        <div class="form-row"><label>Clear payoff<input name="clearPayoff" placeholder="Yes / No / needs verification" /></label><label>Last verified<input name="lastVerified" type="date" /></label></div>
+        <div class="form-row"><label>Source name<input name="sourceName" placeholder="TMDB / MDL / official page" /></label><label>Source URL<input name="sourceUrl" type="url" placeholder="https://…" /></label></div>
+        <label>Synopsis / metadata note<textarea name="overview" rows="3" placeholder="What it is, only where sourced."></textarea></label>
+        <menu><button class="button button-ghost" data-close-dialog="metadataDialog" type="button">Cancel</button><button class="button button-primary" value="default">Save metadata</button></menu>
+      </form>
+    </dialog>
+
+    <template id="emptyStateTemplate"><div class="empty-state"><p>No titles here yet.</p></div></template>
+    <script src="watch-seed.js"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

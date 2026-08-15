@@ -1,0 +1,3 @@
+.env.local
+.google-oauth.json
+.DS_Store
